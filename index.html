@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WetSimFX Manual</title>
+<meta name="description" content="User manual for WetSimFX, a real-time blood, mud and water simulation add-on for Blender.">
+<style>
+:root {
+  --bg: #f6f4f1; --surface: #ffffff; --ink: #1d1b19; --muted: #5f5a54; --line: #e2ddd6;
+  --accent: #8e1b1b; --accent-ink: #ffffff; --code-bg: #efebe5; --note: #f3ece0;
+  --radius: 10px; --measure: 46rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #151413; --surface: #1d1c1a; --ink: #ece8e3; --muted: #a59f97; --line: #33302c;
+    --accent: #d0534f; --accent-ink: #151413; --code-bg: #26241f; --note: #2a251d;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #151413; --surface: #1d1c1a; --ink: #ece8e3; --muted: #a59f97; --line: #33302c;
+  --accent: #d0534f; --accent-ink: #151413; --code-bg: #26241f; --note: #2a251d;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 17px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+a { color: var(--accent); }
+img { max-width: 100%; height: auto; display: block; border-radius: var(--radius); }
+code, kbd { font: 0.9em ui-monospace, "Cascadia Mono", Consolas, monospace; background: var(--code-bg);
+  padding: 0.1em 0.35em; border-radius: 4px; }
+pre { background: var(--code-bg); padding: 0.9rem 1rem; border-radius: var(--radius); overflow-x: auto; }
+pre code { background: none; padding: 0; }
+
+.layout { display: grid; grid-template-columns: 15rem minmax(0, 1fr); gap: 3rem;
+  max-width: 76rem; margin: 0 auto; padding: 0 1.5rem; }
+nav.toc { position: sticky; top: 0; align-self: start; max-height: 100vh; overflow-y: auto; padding: 2.5rem 0; }
+nav.toc .brand { font-weight: 700; font-size: 1.15rem; letter-spacing: 0.01em; margin-bottom: 1.2rem; }
+nav.toc .brand span { color: var(--accent); }
+nav.toc ol { list-style: none; margin: 0; padding: 0; }
+nav.toc li { margin: 0.15rem 0; }
+nav.toc a { color: var(--muted); text-decoration: none; font-size: 0.95rem; }
+nav.toc a:hover { color: var(--ink); }
+main { padding: 2.5rem 0 5rem; min-width: 0; }
+main > section { max-width: var(--measure); margin-bottom: 3.5rem; }
+main > section.wide { max-width: none; }
+h1 { font-size: 2.6rem; line-height: 1.1; margin: 0 0 0.6rem; letter-spacing: -0.01em; }
+h2 { font-size: 1.6rem; margin: 0 0 1rem; padding-top: 0.5rem; border-top: 1px solid var(--line); }
+h3 { font-size: 1.15rem; margin: 1.8rem 0 0.5rem; }
+.lede { font-size: 1.2rem; color: var(--muted); max-width: 40rem; }
+.hero img { margin: 1.8rem 0 0.4rem; }
+.caption { color: var(--muted); font-size: 0.9rem; margin: 0.3rem 0 0; }
+.facts { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin: 1.2rem 0 0; padding: 0; list-style: none;
+  color: var(--muted); font-size: 0.95rem; }
+.facts b { color: var(--ink); font-weight: 600; }
+
+ol.steps { counter-reset: s; list-style: none; padding: 0; }
+ol.steps > li { counter-increment: s; position: relative; padding-left: 2.6rem; margin: 0 0 1rem; }
+ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 0.05rem; width: 1.75rem; height: 1.75rem;
+  border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 0.9rem;
+  display: grid; place-items: center; }
+
+.presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(12.5rem, 1fr)); gap: 1.25rem; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.card img { border-radius: 0; aspect-ratio: 16 / 10; object-fit: cover; width: 100%; }
+.card .body { padding: 0.9rem 1rem 1.1rem; }
+.card h3 { margin: 0 0 0.3rem; }
+.card p { margin: 0 0 0.6rem; color: var(--muted); font-size: 0.95rem; }
+.card dl { margin: 0; font-size: 0.9rem; display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.8rem; }
+.card dt { font-weight: 600; }
+.card dd { margin: 0; color: var(--muted); }
+
+table { border-collapse: collapse; width: 100%; font-size: 0.95rem; margin: 0.6rem 0 1.2rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--line); }
+th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; }
+td:first-child { font-weight: 600; white-space: nowrap; }
+.table-wrap { overflow-x: auto; }
+
+.note { background: var(--note); border-left: 3px solid var(--accent); padding: 0.8rem 1rem; border-radius: 0 var(--radius) var(--radius) 0;
+  margin: 1rem 0; }
+.note p { margin: 0; }
+details { border-bottom: 1px solid var(--line); padding: 0.7rem 0; }
+details summary { cursor: pointer; font-weight: 600; }
+details p { margin: 0.5rem 0 0; color: var(--muted); }
+.figs { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+footer { color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--line); padding-top: 1rem; max-width: var(--measure); }
+
+@media (max-width: 860px) {
+  .layout { grid-template-columns: 1fr; gap: 0; padding: 0 16px; }
+  nav.toc { position: static; max-height: none; padding: 1.5rem 0 0; }
+  nav.toc ol { columns: 2; }
+  h1 { font-size: 2rem; }
+  .figs { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="Contents">
+  <div class="brand">Wet<span>Sim</span>FX</div>
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#install">Install</a></li>
+    <li><a href="#quick-start">Quick start</a></li>
+    <li><a href="#presets">Presets</a></li>
+    <li><a href="#panel">The panel</a></li>
+    <li><a href="#objects">Brushes &amp; Sources</a></li>
+    <li><a href="#render">Live, Bake, Render</a></li>
+    <li><a href="#advanced">Advanced settings</a></li>
+    <li><a href="#tips">Tips &amp; limits</a></li>
+    <li><a href="#faq">Troubleshooting</a></li>
+    <li><a href="#changes">Version history</a></li>
+  </ol>
+</nav>
+
+<main>
+<section class="hero" id="overview">
+  <h1>WetSimFX</h1>
+  <p class="lede">Blood, mud and water that behave like the real thing, simulated on your GPU in real time inside Blender.
+    Objects push, smear and splash the fluid, carry it away on their surfaces, and leave tracks that dry.</p>
+  <img src="img/fresh.jpg" alt="A wooden plank dragged through a pool of fresh blood on concrete, leaving a smear and droplets" width="1600" height="900">
+  <p class="caption">Fresh Blood preset: a plank dragged through a pool. Rendered in EEVEE from a baked simulation.</p>
+  <ul class="facts">
+    <li><b>Blender</b> 5.3 or newer</li>
+    <li><b>Renderers</b> EEVEE and Cycles</li>
+    <li><b>Presets</b> Fresh Blood, Old Blood, Mud, Water</li>
+    <li><b>Output</b> EXR sequence, no add-on needed at render time</li>
+    <li><b>Solver</b> 2D height field (not a 3D fluid sim)</li>
+  </ul>
+</section>
+
+<section id="install">
+  <h2>Install</h2>
+  <ol class="steps">
+    <li>Download <code>wetsimfx-&lt;version&gt;.zip</code>. Do not unzip it.</li>
+    <li>In Blender open <b>Edit › Preferences › Get Extensions</b>, click the <b>⌄</b> menu at the top right and pick
+      <b>Install from Disk</b>, then choose the zip.</li>
+    <li>Open the 3D Viewport sidebar (<kbd>N</kbd>). The <b>WetSimFX</b> tab is there.</li>
+  </ol>
+  <div class="note"><p>Upgrading from the old <b>Viscous Fluid RT</b>? Uninstall it first. Scenes made with it keep their
+    settings: WetSimFX reads them.</p></div>
+  <p>A graphics card with current drivers is needed: the simulation runs on the GPU. Any card that runs Blender 5.3's
+    EEVEE well is enough; more video memory allows the 2048 resolution.</p>
+</section>
+
+<section id="quick-start">
+  <h2>Quick start</h2>
+  <p>Five minutes from an empty scene to a rendered smear.</p>
+  <ol class="steps">
+    <li><b>Pick a preset</b> by clicking the big thumbnail at the top of the panel.</li>
+    <li><b>Set the Surface.</b> Click <b>Create Surface</b> for a new fluid plane, or pick your own floor or ground
+      object in the <b>Surface</b> field: a fluid surface is fitted on top of it and your object is left as it is.</li>
+    <li><b>Add the objects.</b> Put the objects that should push the fluid (a foot, a tyre, a plank) in a collection and
+      pick it as <b>Brushes</b>. Put a few flat shapes where the pools or puddles should start in another collection and
+      pick it as <b>Sources</b>. Sources never render.</li>
+    <li><b>Press Live</b> and move or play your animation: the fluid reacts in the viewport. <b>Reset</b> puts it back to
+      the start.</li>
+    <li><b>Bake Frames</b> when the motion is right. The material switches to the baked frames, so you can render with
+      EEVEE, Cycles, from the command line or on a render farm.</li>
+  </ol>
+  <figure>
+    <img src="img/panel.png" alt="The WetSimFX sidebar panel shown for the Fresh Blood, Mud and Water presets" width="750" height="660" loading="lazy">
+    <figcaption class="caption">The panel for Fresh Blood, Mud and Water. The settings box changes with the preset.</figcaption>
+  </figure>
+</section>
+
+<section id="presets" class="wide">
+  <h2>Presets</h2>
+  <p style="max-width:var(--measure)">Each preset is a full set of physical numbers and its own look. Switching preset on a
+    surface made by WetSimFX rebuilds its material at once. The box under Live shows only the few settings that change that
+    preset's look most.</p>
+  <div class="presets">
+    <article class="card">
+      <img src="img/fresh.jpg" alt="Fresh blood smeared by a plank" loading="lazy">
+      <div class="body">
+        <h3>Fresh Blood</h3>
+        <p>Bright crimson that turns near-black where it is deep. Glossy, slow and heavy; thin smears stay wet.</p>
+        <dl><dt>Pool Depth</dt><dd>depth of the pools at the Sources</dd>
+          <dt>Splash</dt><dd>droplets flung off fast objects</dd>
+          <dt>Streaks</dt><dd>drag lines per metre a sliding object leaves</dd>
+          <dt>Continuous Emit</dt><dd>objects keep leaking blood where they touch</dd></dl>
+      </div>
+    </article>
+    <article class="card">
+      <img src="img/blood.jpg" alt="Old blood smeared by a plank" loading="lazy">
+      <div class="body">
+        <h3>Old Blood</h3>
+        <p>Darker maroon blood that has started to dry: thin films go matte and brown with time.</p>
+        <dl><dt>Settings</dt><dd>same as Fresh Blood</dd></dl>
+      </div>
+    </article>
+    <article class="card">
+      <img src="img/mud.jpg" alt="A ball rolled through deep mud, leaving a rut with berms" loading="lazy">
+      <div class="body">
+        <h3>Mud</h3>
+        <p>A thick layer that objects carve: ruts, berms, prints and torn edges. Churned mud turns wet and smeared,
+          moving objects throw clods, and objects come out coated.</p>
+        <dl><dt>Mud Depth</dt><dd>thickness of the mud layer</dd>
+          <dt>Stiffness</dt><dd>how well it holds a shape (higher keeps prints)</dd>
+          <dt>Lumpiness</dt><dd>uneven material: berms tear in places</dd>
+          <dt>Footprints</dt><dd>a trail of boot prints already pressed in</dd></dl>
+      </div>
+    </article>
+    <article class="card">
+      <img src="img/water.jpg" alt="A ball resting in a water puddle on concrete" loading="lazy">
+      <div class="body">
+        <h3>Water</h3>
+        <p>Puddles in the floor's own material: reflections where water stands, darker damp floor around it, wet tracks
+          that fade and dry.</p>
+        <dl><dt>Puddle Depth</dt><dd>depth of the puddles at the Sources</dd>
+          <dt>Drying Time</dt><dd>how long a wet track stays glossy</dd>
+          <dt>Wet Trail</dt><dd>how far a wet object walks before its tracks stop</dd>
+          <dt>Splash</dt><dd>droplets from fast or stomping objects</dd></dl>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section id="panel">
+  <h2>The panel</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Item</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>Preset</td><td>Fresh Blood, Old Blood, Mud or Water. Click the thumbnail to choose.</td></tr>
+      <tr><td>Surface</td><td>Where the fluid lies. Pick your floor or ground and a fluid surface is fitted on top of it,
+        as wide as its shorter side and turned with it. Your object is not changed.</td></tr>
+      <tr><td>Size</td><td>Width of the fluid area, applied by Create / Rebuild Surface. 6 m by default.</td></tr>
+      <tr><td>Resolution</td><td>512, 1024 or 2048 cells across. 1024 is the everyday choice; 2048 for close-ups,
+        four times slower.</td></tr>
+      <tr><td>Create / Rebuild Surface</td><td>Makes the fluid plane and its material for the current preset.</td></tr>
+      <tr><td>Brushes</td><td>Collection of objects that push the fluid around.</td></tr>
+      <tr><td>Sources</td><td>Collection of objects whose footprint starts as a pool (or puddle) and can keep pouring.</td></tr>
+      <tr><td>Live / Stop</td><td>Runs the simulation in the viewport. The frame rate is shown under it.</td></tr>
+      <tr><td>Reset</td><td>Back to the start: bed, fill layer, pools at the Sources.</td></tr>
+      <tr><td>Dirty / Wet the Brushes</td><td>Adds a blood, mud or water layer to the brush objects' materials. It shows
+        only where and when they touched the fluid.</td></tr>
+      <tr><td>Bake Folder</td><td>Where the EXR frames go. <code>//fluid_cache/</code> = next to the .blend file.</td></tr>
+      <tr><td>Bake Frames</td><td>Simulates the scene's frame range and switches the material to the baked frames.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="objects">
+  <h2>Brushes &amp; Sources</h2>
+  <h3>Brushes</h3>
+  <p>Any mesh in the Brushes collection displaces the fluid where its underside reaches it: a sliding object plows a
+    bow wave and leaves a thin streaky film, a rolling one presses ruts with berms on both sides, a falling one splashes.
+    Animated, simulated or hand-moved objects all work. Faster objects are handled with more substeps automatically; in
+    mud, an object dragged very fast sheds the top of its bow pile as flying clods instead of stacking it up.</p>
+  <p>Objects that touched the fluid get coated where they touched it once you press <b>Dirty the Brushes</b> (or
+    <b>Wet the Brushes</b> for water): a ball rolled through blood carries a band round its middle, a board dragged
+    through mud sinks into the channel it cuts.</p>
+  <h3>Sources</h3>
+  <p>Draw the outline of a pool or puddle with a flat mesh and put it in the Sources collection. At Reset its footprint
+    fills to <b>Pool Depth</b>. Two optional custom properties on a source object (Object Properties › Custom Properties):</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Property</th><th>Meaning</th><th>Example</th></tr></thead>
+    <tbody>
+      <tr><td><code>vf_depth</code></td><td>This source's own pool depth, in metres, instead of Pool Depth.</td><td><code>0.006</code> = 6 mm</td></tr>
+      <tr><td><code>vf_rate</code></td><td>Keeps pouring while the sim runs, in metres of thickness per second.</td><td><code>0.002</code> = a steady trickle</td></tr>
+    </tbody>
+  </table></div>
+  <p>An object can be a source and a brush at the same time, for example a leaking bag that is dragged across the floor.</p>
+</section>
+
+<section id="render">
+  <h2>Live, Bake, Render</h2>
+  <p><b>Live</b> is for finding the motion: it runs as fast as your card allows and reacts while you move things. It is
+    not frame-exact. <b>Bake Frames</b> steps through the frame range at a fixed rate and writes two EXR sequences per frame
+    (<code>&lt;Surface&gt;_0001.exr</code> and, when the look needs it, <code>&lt;Surface&gt;_b_0001.exr</code>). The
+    material reads them like any image sequence, so renders need no Python and no add-on: send the .blend and the bake
+    folder to a farm.</p>
+  <div class="note"><p>For EEVEE, turn on <b>Raytracing</b> in the render settings: wet reflections and puddles depend on it.
+    Cycles needs nothing extra.</p></div>
+  <div class="figs">
+    <figure><img src="img/water_track.jpg" alt="Wet ball tracks on concrete fading as they dry" loading="lazy">
+      <figcaption class="caption">Water: tracks fade over Wet Trail, then dry over Drying Time.</figcaption></figure>
+    <figure><img src="img/mud_plank.jpg" alt="A plank pushed through mud with a heap at its front" loading="lazy">
+      <figcaption class="caption">Mud: a dragged plank sinks into the channel it cuts; a rolled ball leaves a rut with berms.</figcaption></figure>
+  </div>
+</section>
+
+<section id="advanced">
+  <h2>Advanced settings</h2>
+  <p>Closed by default; every preset sets them for you. Values are real physical units, so you can match a reference.</p>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Setting</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><th colspan="2">Fluid</th></tr>
+      <tr><td>Viscosity</td><td>Thickness, Pa·s. Water 0.001, fresh blood 0.004, honey 10, soft mud 10–100.</td></tr>
+      <tr><td>Density</td><td>kg/m³. Blood 1060, wet mud 1600–2000.</td></tr>
+      <tr><td>Yield Stress</td><td>How well it holds its shape. 0 levels out like a liquid; mud that keeps boot prints 1000+.</td></tr>
+      <tr><td>Lumpiness</td><td>Uneven material: stiffness varies in lumps, so berms tear in places and hold in others.</td></tr>
+      <tr><th colspan="2">Spreading</th></tr>
+      <tr><td>Edge Thickness</td><td>Pools stop spreading over dry floor at about this thickness. Blood 2–3 mm.</td></tr>
+      <tr><td>Wet Edge Thickness</td><td>The same over floor that was already wet: fluid closes back in over its own smear.</td></tr>
+      <tr><th colspan="2">Start state</th></tr>
+      <tr><td>Fill Depth</td><td>A layer covering the whole area at Reset (0 = dry floor; Mud Depth for mud).</td></tr>
+      <tr><td>Pool Depth</td><td>Depth of the pools at the Sources.</td></tr>
+      <tr><td>Bed Unevenness / Bed Scale</td><td>Height and width of the gentle bumps and dips under the fluid.</td></tr>
+      <tr><td>Footprints</td><td>Boot prints already pressed into the fill layer at Reset.</td></tr>
+      <tr><td>Edge Pin</td><td>A band at the border that blends into the start state, so the fluid area meets the ground around it.</td></tr>
+      <tr><th colspan="2">Brushes</th></tr>
+      <tr><td>Brush Gap</td><td>The small gap under a sliding object. A dragged object leaves a film about half this thick.</td></tr>
+      <tr><td>Bristle Scale</td><td>Drag lines per metre (Streaks).</td></tr>
+      <tr><td>Brush Grip</td><td>1: fluid sticks to the sliding object and half of it goes along; 0: it slides over.</td></tr>
+      <tr><td>Compaction</td><td>Share of what a descending object presses out that is packed dense instead of pushed aside.</td></tr>
+      <tr><td>Spatter</td><td>Splash: how much a fast object flings off as droplets and short streaks (0 = none). For Mud it is
+        how many clods a moving object throws per second (1.6 by default); a very fast object always sheds part of the
+        pile it pushes, even at 0.</td></tr>
+      <tr><th colspan="2">Water</th></tr>
+      <tr><td>Track Film</td><td>Thickness of the film a fully wet object leaves on dry floor.</td></tr>
+      <tr><td>Drying Unevenness</td><td>How unevenly the floor dries (0 = all at the same rate).</td></tr>
+      <tr><th colspan="2">Solver</th></tr>
+      <tr><td>Max Substeps</td><td>Upper limit of substeps per step. Raise it only if a very fast object leaves a pile that stands too tall.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="tips">
+  <h2>Tips &amp; limits</h2>
+  <h3>A 2D solver, not a 3D one</h3>
+  <p>WetSimFX simulates the fluid as a <b>height field</b>: for every spot on the surface it tracks how thick the
+    layer is and how it flows sideways, the way a thin film of blood, mud or water really behaves on the ground. This is
+    what makes it real-time and lets it model what thin layers do: weight, spreading, smearing, ruts and drying.</p>
+  <p>It is not a 3D volume simulation like Mantaflow or FLIP. What that means in practice:</p>
+  <ul>
+    <li>One fluid layer per spot: no fluid flowing under itself, no curling or breaking waves, no tunnels.</li>
+    <li>No falling streams or drops in the air. Splash droplets land as splats where they would fall, without a
+      flight in between.</li>
+    <li>The fluid stays on the surface. A bucket being poured, a jet or a deep tank needs a 3D fluid sim; WetSimFX
+      handles the puddle, the smear and the tracks they leave.</li>
+  </ul>
+  <h3>Tips</h3>
+  <ul>
+    <li><b>Scale matters.</b> The fluid uses real units: a 6 m surface at 1024 has 6 mm cells. Keep objects at real size.</li>
+    <li><b>Close-ups:</b> shrink Size to the area you need before raising Resolution. A 2 m area at 1024 is sharper than
+      6 m at 2048 and four times faster.</li>
+    <li><b>Floors and gentle ground only</b> in this version: the fluid lies on a flat or gently uneven surface. Walls,
+      stairs and other objects come in version 2.6.</li>
+    <li><b>Water in EEVEE</b> is drawn inside your floor's own material (a wet layer and a clear coat), because EEVEE cannot
+      reflect through a see-through surface. If your floor does not use a Principled BSDF, an approximate look is used.</li>
+    <li><b>Live frame rate</b> drops with fast objects and 2048. Use 512 or 1024 while animating; bake at the final setting.</li>
+  </ul>
+</section>
+
+<section id="faq">
+  <h2>Troubleshooting</h2>
+  <details><summary>I press Live and nothing happens.</summary>
+    <p>Check that a Surface is set and that the Sources collection has objects (or Fill Depth is above 0). Brushes only
+      move fluid that is there. Sources must overlap the fluid area.</p></details>
+  <details><summary>The fluid does not react to my object.</summary>
+    <p>The object must be a mesh in the Brushes collection and its underside must reach the fluid surface. Objects
+      floating above it do nothing.</p></details>
+  <details><summary>The render shows the fluid from Live, not the bake.</summary>
+    <p>Press Stop, then Bake Frames. After a bake the material reads the baked frames; Live switches it back.</p></details>
+  <details><summary>The baked frames are missing on another computer or the farm.</summary>
+    <p>Keep the Bake Folder relative (<code>//fluid_cache/</code>) and copy that folder along with the .blend.</p></details>
+  <details><summary>A very fast object leaves a tall wall of fluid.</summary>
+    <p>Raise Spatter so the pile breaks into splash, or raise Max Substeps in Advanced.</p></details>
+  <details><summary>Live is slow.</summary>
+    <p>Lower Resolution to 512 while animating, or reduce Size. The first start can take a few seconds while Blender
+      compiles the GPU shaders.</p></details>
+</section>
+
+<section id="changes">
+  <h2>Version history</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Version</th><th>Changes</th></tr></thead>
+    <tbody>
+      <tr><td>2.5.2</td><td>Mud: churned mud (ruts, berms, the lane behind a dragged object) now looks wet, smeared and darker
+        than untouched mud; moving objects throw clods of mud. Fixed spikes when an object is dragged very fast through mud.</td></tr>
+      <tr><td>2.5.1</td><td>Fixed water and mud coats on objects appearing all at once at first contact; they now grow where and
+        when the object touches.</td></tr>
+      <tr><td>2.5</td><td>More realistic blood and mud: objects get coated only where they touched; darker, more natural Old Blood pools; deeper mud ruts and a wet mud coat on objects; new close-up preset thumbnails.</td></tr>
+      <tr><td>2.4</td><td>Water realism: depth, wet tracks, objects that look wet, drying. Fixed an error when rebuilding a surface fitted on a floor.</td></tr>
+      <tr><td>2.3</td><td>New Water preset: puddles, wet tracks that dry, stomp splash.</td></tr>
+      <tr><td>2.2</td><td>Renamed to WetSimFX. New Fresh Blood preset. Preset picker with thumbnails.</td></tr>
+      <tr><td>2.1</td><td>Pick any floor as the Surface. Continuous Emit for blood. Simpler panel. Fixed spikes when objects move fast through mud.</td></tr>
+      <tr><td>2.0</td><td>New physics core: weight, splash, ruts and berms, lumpy mud.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<footer>
+  <p>WetSimFX by AMSY3D. Demo scenes use CC0 textures and HDRIs from Poly Haven.</p>
+</footer>
+</main>
+</div>
+</body>
+</html>
